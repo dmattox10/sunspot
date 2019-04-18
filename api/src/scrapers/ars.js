@@ -1,13 +1,13 @@
 const axios = require('axios')
 const cheerio = require('cheerio')
-const tools = require('./tools')
-const url = 'https://arstechnica.com'
+const tools = require('../tools')
+const home = 'https://arstechnica.com'
 
 let results = []
 let output = []
-exports.getContent = async () => {
+exports.getHome = async () => {
     try {
-        const response = await axios.get(url)
+        const response = await axios.get(home)
         const $ = cheerio.load(response.data)
         $('.site-wrapper #main .tease').map((i, element) => {
             const title = $(element).find('h2').children('a').text() // works
@@ -30,6 +30,7 @@ exports.getContent = async () => {
             $('.site-wrapper #main .article-guts').map((i, element) => {
                 const body = $(element).find('.article-content').children().not('#article-footer-wrap').not('#comments-area').not('#social-left').not('.xrail').not('#social-footer').text().trim()
                 const data = {
+                    site: 'ars',
                     title: results[i].title,
                     summary: results[i].summary,
                     link: results[i].link,

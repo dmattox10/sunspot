@@ -1,0 +1,19 @@
+arstechnica.com
+techspot.com
+zdnet.com
+anandtech.com
+engadget.com
+io9.gizmodo.com (gizmodo.com?)
+tomshardware.com
+macworld.com
+comicbook.com/gaming
+geektyrant.com
+gamersnexus.net
+vg247.com
+pcgamer.com
+
+interest based scraping? Tool, music?
+
+Local:
+tribdem.com
+wjactv.com
