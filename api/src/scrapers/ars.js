@@ -25,15 +25,20 @@ exports.getHome = async () => {
     }
     try {
         for (let i = 0; i < results.length; i++) {
-            const response = await axios.get(results[i].link)
+            let title = results[i].title
+            let summary = results[i].summary
+            let link = results[i].link
+            console.log(results[i].link)
+        const response = await axios.get(results[i].link)
             const $ = cheerio.load(response.data)
             $('.site-wrapper #main .article-guts').map((i, element) => {
                 const body = $(element).find('.article-content').children().not('#article-footer-wrap').not('#comments-area').not('#social-left').not('.xrail').not('#social-footer').text().trim()
+                
                 const data = {
                     site: 'ars',
-                    title: results[i].title,
-                    summary: results[i].summary,
-                    link: results[i].link,
+                    title: title,
+                    summary: summary,
+                    link: link,
                     body: body
                 }
                 output.push(data)
