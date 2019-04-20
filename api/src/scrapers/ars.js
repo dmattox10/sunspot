@@ -5,9 +5,9 @@ const home = 'https://arstechnica.com'
 
 let results = []
 let output = []
-exports.getHome = async () => {
+exports.get = async (url) => {
     try {
-        const response = await axios.get(home)
+        const response = await axios.get(url)
         const $ = cheerio.load(response.data)
         $('.site-wrapper #main .tease').map((i, element) => {
             const title = $(element).find('h2').children('a').text() // works
