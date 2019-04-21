@@ -9,8 +9,8 @@ const runner = require('./runner')
 const entries = require('./routes/entries')
 
 mongoose.connect(config.DB, { useNewUrlParser: true }).then(
-    () => {console.log('Database is connected') },
-    err => { console.log('Can not connect to the database'+ err)}
+    () => { console.log('Database is connected') },
+    err => { console.log('Can not connect to the database'+ err) }
 )
 
 const app = express()
@@ -25,8 +25,12 @@ app.get('/', function(req, res) {
     res.send('hello')
 })
 
-new CronJob('0 53 20 * * 1-5', () => {
+new CronJob('0 32 9 * * *', () => {
     runner.updateDB()
+}, null, true, 'America/New_York')
+
+new CronJob('0 56 11 * * *', () => {
+    runner.cleanDB()
 }, null, true, 'America/New_York')
 
 const PORT = process.env.PORT || 5000

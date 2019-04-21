@@ -1,7 +1,7 @@
 const axios = require('axios')
 const cheerio = require('cheerio')
 const tools = require('../tools')
-const home = 'https://arstechnica.com'
+const btoa = require('btoa')
 
 let results = []
 let output = []
@@ -13,12 +13,17 @@ exports.get = async (url) => {
             const title = $(element).find('h2').children('a').text() // works
             const summary = $(element).find('.excerpt').text() // works
             const link = $(element).find('a').attr('href') //works
-            const data = {
-                title: title,
-                summary: summary,
-                link: link
-            }
-            results.push(data)
+            const imageLink = $(element).find('div.listing').css('background-image')
+            img(String(imageLink)).then(image => {
+                const data = {
+                    title: title,
+                    summary: summary,
+                    link: link,
+                    image: image
+                }
+                results.push(data)
+            })
+            
         })
     } catch (error) {
         console.error("Something bad happened: " + error)
@@ -28,18 +33,20 @@ exports.get = async (url) => {
             let title = results[i].title
             let summary = results[i].summary
             let link = results[i].link
-            console.log(results[i].link)
-        const response = await axios.get(results[i].link)
-            const $ = cheerio.load(response.data)
+            let image = results[i].image
+            const response = await axios.get(results[i].link)
+            const $ = cheerio.load(response.data , {
+                normalizeWhitespace: true
+            })
             $('.site-wrapper #main .article-guts').map((i, element) => {
                 const body = $(element).find('.article-content').children().not('#article-footer-wrap').not('#comments-area').not('#social-left').not('.xrail').not('#social-footer').text().trim()
-                
                 const data = {
                     site: 'ars',
                     title: title,
                     summary: summary,
                     link: link,
-                    body: body
+                    body: body,
+                    image: image
                 }
                 output.push(data)
             })
@@ -50,3 +57,29 @@ exports.get = async (url) => {
     }
     return output
   }
+async function img(image) {
+    image = image.substr(5, image.length - 7)
+    try {
+        let response = await axios.get(image, {
+            responseType: 'blob'
+        })
+        let contents = Buffer.from(response.data).toString('base64')
+        return `data:${response.headers['content-type'].toLowerCase()};base64,${contents}`
+        
+    }
+    catch (error) {
+        console.log(error)
+    }
+}
+  /*
+  (body.find('.intro-image.intro-left').children('img').attr('src') ? 
+                    image = $(element.find('.intro-image.intro-left').children('img').attr('src'))
+                    : 
+                    image = $(element.find('.image.shortcode-img').children('img').attr('src'))
+                )
+                const image_data = tools.img(image)
+                image_data.then(ouput => {
+                    console.log(output)
+                    
+                })
+    */

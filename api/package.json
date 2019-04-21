@@ -9,9 +9,11 @@
   "license": "MIT",
   "dependencies": {
     "axios": "^0.18.0",
+    "btoa": "^1.2.1",
     "cheerio": "^1.0.0-rc.3",
     "cron": "^1.7.0",
     "express": "^4.16.4",
+    "moment": "^2.24.0",
     "mongoose": "^5.5.2"
   },
   "devDependencies": {
