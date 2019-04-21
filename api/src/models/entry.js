@@ -1,6 +1,6 @@
-const mongoose = require('mongoose');
+const mongoose = require('mongoose')
 
-const Schema = mongoose.Schema;
+const Schema = mongoose.Schema
 
 const EntrySchema = new Schema({
     _id: Schema.Types.ObjectId,
@@ -26,14 +26,14 @@ const EntrySchema = new Schema({
     },
     image: {
         type: String,
-        required: false
+        required: true
     },
     date: {
         type: Date,
         default: Date.now
     }
-});
+})
 
-const Entry = mongoose.model('entries', EntrySchema);
+const Entry = mongoose.model('entries', EntrySchema)
 
-module.exports = Entry;
+module.exports = Entry

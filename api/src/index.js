@@ -25,7 +25,7 @@ app.get('/', function(req, res) {
     res.send('hello')
 })
 
-new CronJob('0 32 9 * * *', () => {
+new CronJob('0 27 16 * * *', () => {
     runner.updateDB()
 }, null, true, 'America/New_York')
 

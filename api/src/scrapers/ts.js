@@ -9,12 +9,11 @@ exports.get = async (url) => {
     try {
         const response = await axios.get(url)
         const $ = cheerio.load(response.data)
-        $('.site-wrapper #main .tease').map((i, element) => {
-            const title = $(element).find('h2').children('a').text() // works
-            const summary = $(element).find('.excerpt').text() // works
-            const link = $(element).find('a').attr('href') //works
-            var imageLink = $(element).find('div.listing').css('background-image')
-            imageLink = imageLink.substr(5, imageLink.length - 7)
+        $('#content .wrapper #features ul li').map((i, element) => {
+            const title = $(element).find('h3').children('a').text()
+            const summary = $(element).find('div.desc').text()
+            const link = $(element).find('h3').children('a').attr('href')
+            const imageLink = $(element).find('li div.img a').children('img').attr('src')
             tools.img(String(imageLink)).then(image => {
                 const data = {
                     title: title,
@@ -24,25 +23,26 @@ exports.get = async (url) => {
                 }
                 results.push(data)
             })
-            
         })
-    } catch (error) {
-        console.error("Something bad happened: " + error)
+    }
+    catch (error) {
+        console.log(error)
     }
     try {
         for (let i = 0; i < results.length; i++) {
             let title = results[i].title
             let summary = results[i].summary
             let link = results[i].link
+            console.log(link)
             let image = results[i].image
             const response = await axios.get(results[i].link)
             const $ = cheerio.load(response.data , {
                 normalizeWhitespace: true
             })
-            $('.site-wrapper #main .article-guts').map((i, element) => {
-                const body = $(element).find('.article-content').children().not('#article-footer-wrap').not('#comments-area').not('#social-left').not('.xrail').not('#social-footer').text().trim()
+            $('#GlobalWrapper #content article .wrapper .wrapperMobileOnly .col-2-3-last').map((i, element) => {
+                const body = $(element).find('#feature').children('p').not('p.grey').text().trim()
                 const data = {
-                    site: 'Arstechnica',
+                    site: 'Tech Spot',
                     title: title,
                     summary: summary,
                     link: link,
@@ -60,7 +60,6 @@ exports.get = async (url) => {
 }
 
 async function img(image) {
-    image = image.substr(5, image.length - 7)
     try {
         let response = await axios.get(image, {
             responseType: 'blob'

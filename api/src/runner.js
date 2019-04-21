@@ -1,30 +1,35 @@
 const ars = require('./scrapers/ars')
+const ts = require('./scrapers/ts')
+const zd = require('./scrapers/zd')
 const mongoose = require('mongoose')
 const moment = require('moment')
 const Entry = require('./models/entry')
 const async = require('async')
-const arsPages = 6
+const pages = 6
 const days = 30 // How long to keep news in the DB.
 const arsURL = 'https://arstechnica.com/page/'
+const tsURL = 'https://www.techspot.com/features/'
+const zdnetURL = 'https://www.zdnet.com/'
 
 // All of the scrapers are run from here.
 exports.updateDB = async () => {
     console.log("Updating DB.")
-        // The Ars scraper (works)
-        for (let i = 1; i < arsPages; i++) {
-            await ars.get(arsURL + i).then(results => {
-                results.map((result, index) => {
-                mongoose.connection.db.listCollections({name: 'entries'})
-                .next(function (err, collinfo) {
-                    if (err) { console.log(err) }
-                    if (collinfo) {
-                        // Collection exists, test if entry exists, if not, save it
-                        async.parallel({
+    /*
+    // The Ars scraper (works)
+    for (let i = 1; i < pages; i++) {
+        await ars.get(arsURL + i).then(results => {
+            results.map((result, index) => {
+            mongoose.connection.db.listCollections({name: 'entries'})
+            .next(function (err, collinfo) {
+                if (err) { console.log(err) }
+                if (collinfo) {
+                    // Collection exists, test if entry exists, if not, save it
+                    async.parallel({
 
-                            entry: (callback) => {
-                            Entry.findOne({ link: result.link})
-                            .exec(callback)
-                            }
+                        entry: (callback) => {
+                        Entry.findOne({ link: result.link})
+                        .exec(callback)
+                        }
                         }, (err, db) => {
                             if (err) { console.log(err) }
                             if (db.entry) {
@@ -33,49 +38,97 @@ exports.updateDB = async () => {
                             }
                             else {
                                 // This entry does not exist! Save it!
-                                let id = mongoose.Types.ObjectId()
-                                let entry = new Entry(
-                                    {
-                                        _id: id,
-                                        site: result.site,
-                                        title: result.title,
-                                        summary: result.summary,
-                                        link: result.link,
-                                        body: result.body,
-                                        image: result.image
-                                    }
-                                )
-                                entry.save((err) => {
-                                    if (err) { console.log(err) }
-                                })
+                                store(result.site, result.title, result.summary, result.link, result.body, result.image)
                             }
                         })
                     }
                     else {
                         // This is our intial save, dump it all!
-                        let id = mongoose.Types.ObjectId()
-                        let entry = new Entry(
-                            {
-                                _id: id,
-                                site: result.site,
-                                title: result.title,
-                                summary: result.summary,
-                                link: result.link,
-                                body: result.body,
-                                image: result.image
-                            }
-                        )
-                        entry.save((err) => {
-                            if (err) { console.log(err) }
-                        })
+                        store(result.site, result.title, result.summary, result.link, result.body, result.image)
                     }
                 })
             })   
         })
     }
-    // The next scraper gets run here
+    console.log("ars done.")
+    */
+    /*
+    // TechSpot Features Scraper
+    for (let i = 1; i < pages; i++) {
+        await ts.get(tsURL + i).then(results => {
+            results.map((result, index) => {
+            mongoose.connection.db.listCollections({name: 'entries'})
+            .next(function (err, collinfo) {
+                if (err) { console.log(err) }
+                if (collinfo) {
+                    // Collection exists, test if entry exists, if not, save it
+                    async.parallel({
 
+                        entry: (callback) => {
+                        Entry.findOne({ link: result.link})
+                        .exec(callback)
+                        }
+                        }, (err, db) => {
+                            if (err) { console.log(err) }
+                            if (db.entry) {
+                                // There already is one, move on
+                                return
+                            }
+                            else {
+                                // This entry does not exist! Save it!
+                                store(result.site, result.title, result.summary, result.link, result.body, result.image)
+                            }
+                        })
+                    }
+                    else {
+                        // This is our intial save, dump it all!
+                        store(result.site, result.title, result.summary, result.link, result.body, result.image)
+                    }
+                })
+            })   
+        })
+    }
+    console.log('ts done.')
+    */
+    // ZDNet Scraper goes here
+    for (let i = 1; i < pages; i++) {
+        await zd.get(zdnetURL + i).then(results => {
+            results.map((result, index) => {
+            mongoose.connection.db.listCollections({name: 'entries'})
+            .next(function (err, collinfo) {
+                if (err) { console.log(err) }
+                if (collinfo) {
+                    // Collection exists, test if entry exists, if not, save it
+                    async.parallel({
+
+                        entry: (callback) => {
+                        Entry.findOne({ link: result.link})
+                        .exec(callback)
+                        }
+                        }, (err, db) => {
+                            if (err) { console.log(err) }
+                            if (db.entry) {
+                                // There already is one, move on
+                                return
+                            }
+                            else {
+                                // This entry does not exist! Save it!
+                                store(result.site, result.title, result.summary, result.link, result.body, result.image)
+                            }
+                        })
+                    }
+                    else {
+                        // This is our intial save, dump it all!
+                        store(result.site, result.title, result.summary, result.link, result.body, result.image)
+                    }
+                })
+            })   
+        })
+    }
+    console.log('zd done.')
+    // Next scraper here
 }
+
 // Removies stories older than 'days' days from the DB. Appears to work.
 exports.cleanDB = async () => {
     console.log('Cleaning DB.')
@@ -120,9 +173,22 @@ exports.cleanDB = async () => {
         }
     })
     console.log("done.")
+}    
+// Saves the actual DB entries
+function store (site, title, summary, link, body, image) {
+    let id = mongoose.Types.ObjectId()
+    let entry = new Entry(
+        {
+            _id: id,
+            site: site,
+            title: title,
+            summary: summary,
+            link: link,
+            body: body,
+            image: image
+        }
+    )
+    entry.save((err) => {
+        if (err) { console.log(err) }
+    })
 }
-
-
-// find().sort({ _id: 1 }).limit(10)
-    
-        

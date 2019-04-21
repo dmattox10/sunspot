@@ -1,5 +1,5 @@
 const mongoose = require('mongoose')
-const Axios = require('axios')
+const axios = require('axios')
 
     exports.sizeOf = ( object ) => {
 
@@ -42,15 +42,13 @@ const Axios = require('axios')
     }
 
     exports.img = async (image) => {
-        image = image.substr(5, image.length - 7)
         try {
-            const response = await Axios({
-                image,
-                method: 'GET',
-                responseType: 'stream'
+            let response = await axios.get(image, {
+                responseType: 'blob'
             })
-            let base64data = response.data.toString('base64')
-            return base64data
+            let contents = Buffer.from(response.data).toString('base64')
+            return `data:${response.headers['content-type'].toLowerCase()};base64,${contents}`
+            
         }
         catch (error) {
             console.log(error)
