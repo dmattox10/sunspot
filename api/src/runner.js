@@ -90,6 +90,7 @@ exports.updateDB = async () => {
     }
     console.log('ts done.')
     */
+    /*
     // ZDNet Scraper goes here
     for (let i = 1; i < pages; i++) {
         await zd.get(zdnetURL + i).then(results => {
@@ -126,6 +127,7 @@ exports.updateDB = async () => {
         })
     }
     console.log('zd done.')
+    */
     // Next scraper here
 }
 
