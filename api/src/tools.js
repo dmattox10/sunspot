@@ -42,8 +42,13 @@ const axios = require('axios')
     }
 
     exports.img = async (image) => {
+        const config = {
+            method: 'get',
+            url: image,
+            headers: { 'User-Agent': 'Mozilla/5.0 (compatible; MSIE 9.0; Windows Phone OS 7.5; Trident/5.0; IEMobile/9.0)' }
+        }
         try {
-            let response = await axios.get(image, {
+            let response = await axios(config, {
                 responseType: 'blob'
             })
             let contents = Buffer.from(response.data).toString('base64')

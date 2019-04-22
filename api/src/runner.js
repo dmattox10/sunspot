@@ -1,6 +1,7 @@
 const ars = require('./scrapers/ars')
 const ts = require('./scrapers/ts')
 const zd = require('./scrapers/zd')
+const anand = require('./scrapers/anand')
 const mongoose = require('mongoose')
 const moment = require('moment')
 const Entry = require('./models/entry')
@@ -10,11 +11,12 @@ const days = 30 // How long to keep news in the DB.
 const arsURL = 'https://arstechnica.com/page/'
 const tsURL = 'https://www.techspot.com/features/'
 const zdnetURL = 'https://www.zdnet.com/'
+const anandURL = 'https://www.anandtech.com/Page/'
 
 // All of the scrapers are run from here.
 exports.updateDB = async () => {
     console.log("Updating DB.")
-    
+
     // The Ars scraper (works)
     for (let i = 1; i < pages; i++) {
         await ars.get(arsURL + i).then(results => {
@@ -27,13 +29,14 @@ exports.updateDB = async () => {
                     async.parallel({
 
                         entry: (callback) => {
-                        Entry.findOne({ link: result.link})
+                        Entry.find({ link: result.link}).limit(1)
                         .exec(callback)
                         }
                         }, (err, db) => {
                             if (err) { console.log(err) }
                             if (db.entry) {
                                 // There already is one, move on
+                                // console.log('Link ' + result.link + ' exists in DB')
                                 return
                             }
                             else {
@@ -51,7 +54,7 @@ exports.updateDB = async () => {
         })
     }
     console.log("ars done.")
-    
+
     
     // TechSpot Features Scraper
     for (let i = 1; i < pages; i++) {
@@ -60,7 +63,7 @@ exports.updateDB = async () => {
                 async.parallel({
 
                     entry: (callback) => {
-                        Entry.findOne({ link: result.link})
+                        Entry.find({ link: result.link}).limit(1)
                         .exec(callback)
                     }
                 }, (err, db) => {
@@ -78,8 +81,8 @@ exports.updateDB = async () => {
         })
     }
     console.log('ts done.')
-    
-    
+
+    /*
     // ZDNet Scraper goes here
     for (let i = 1; i < pages; i++) {
         await zd.get(zdnetURL + i).then(results => {
@@ -106,8 +109,35 @@ exports.updateDB = async () => {
             })   
         }
     console.log('zd done.')
-    
-    // Next scraper here
+    */
+
+    // AnandTech scraper
+    for (let i = 1; i < pages; i++) {
+        await anand.get(anandURL + i).then(results => {
+            results.map((result, index) => {
+                    async.parallel({
+
+                        entry: (callback) => {
+                        Entry.find({ link: result.link}).limit(1)
+                        .exec(callback)
+                        }
+                    }, (err, db) => {
+                        if (err) { console.log(err) }
+                        if (db.entry) {
+                            // There already is one, move on
+                            return
+                        }
+                        else {
+                            // This entry does not exist! Save it!
+                            store(result.site, result.title, result.summary, result.link, result.body, result.image)
+                        }
+                    })
+                    
+                })
+            })   
+        }
+    console.log('anand done.')
+    console.log('DB updated.')
 }
 
 // Removies stories older than 'days' days from the DB. Appears to work.

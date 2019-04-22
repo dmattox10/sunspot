@@ -12,14 +12,15 @@ exports.get = async (url) => {
             url: url,
             headers: { 'User-Agent': 'Mozilla/5.0 (compatible; MSIE 9.0; Windows Phone OS 7.5; Trident/5.0; IEMobile/9.0)' }
         }
+        console.log('scraping zd.')
         const response = await axios(config)
         const $ = cheerio.load(response.data)
-        $('#main .contenWrapper .container').children('.river').map((i, element) => {
-            const title = $(element).find('.item .thumbWrap').children('a').attr('title').text().trim() // 
+        $('article.item').map((i, element) => {
+            const title = $(element).find('a.thumb').attr('title').text().trim() // 
             console.log(title)
-            const link = $(element).find('.item .thumbWrap').children('a').attr('href') // 
+            const link = $(element).find('a.thumb').attr('href') // 
             console.log(link)
-            var imageLink = $(element).find('.item .thumbWrap').children('img').attr('src')
+            var imageLink = $(element).find('img').attr('src')
             console.log(imageLink)
             tools.img(String(imageLink)).then(image => {
                 const data = {

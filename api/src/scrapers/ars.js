@@ -7,6 +7,7 @@ let output = []
 
 exports.get = async (url) => {
     try {
+        console.log('scraping ars.')
         const response = await axios.get(url)
         const $ = cheerio.load(response.data)
         $('.site-wrapper #main .tease').map((i, element) => {

@@ -6,27 +6,27 @@ const EntrySchema = new Schema({
     _id: Schema.Types.ObjectId,
     site: {
         type: String,
-        required: true
+        required: false
     },
     title: {
         type: String,
-        required: true
+        required: false
     },
     summary: {
         type: String,
-        required: true
+        required: false
     },
     link: {
         type: String,
-        required: true
+        required: false
     },
     body: {
         type: String,
-        required: true
+        required: false
     },
     image: {
         type: String,
-        required: true
+        required: false
     },
     date: {
         type: Date,

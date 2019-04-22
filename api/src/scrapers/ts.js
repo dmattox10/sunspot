@@ -7,6 +7,7 @@ let output = []
 
 exports.get = async (url) => {
     try {
+        console.log("scraping ts.")
         const response = await axios.get(url)
         const $ = cheerio.load(response.data)
         $('#content .wrapper #features ul li').map((i, element) => {
@@ -33,7 +34,6 @@ exports.get = async (url) => {
             let title = results[i].title
             let summary = results[i].summary
             let link = results[i].link
-            console.log(link)
             let image = results[i].image
             const response = await axios.get(results[i].link)
             const $ = cheerio.load(response.data , {
