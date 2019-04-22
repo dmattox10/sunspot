@@ -13,6 +13,7 @@ const tsURL = 'https://www.techspot.com/features/'
 const zdnetURL = 'https://www.zdnet.com/'
 const anandURL = 'https://www.anandtech.com/Page/'
 
+let saves = 0
 // All of the scrapers are run from here.
 exports.updateDB = async () => {
     console.log("Updating DB.")
@@ -34,20 +35,22 @@ exports.updateDB = async () => {
                         }
                         }, (err, db) => {
                             if (err) { console.log(err) }
-                            if (db.entry) {
+                            if (db.entry.link === result.link) {
                                 // There already is one, move on
-                                // console.log('Link ' + result.link + ' exists in DB')
+                                console.log('Link ' + result.link + ' exists in DB, returning.')
                                 return
                             }
                             else {
                                 // This entry does not exist! Save it!
                                 store(result.site, result.title, result.summary, result.link, result.body, result.image)
+                                console.log('ars saved')
                             }
                         })
                     }
                     else {
                         // This is our intial save, dump it all!
                         store(result.site, result.title, result.summary, result.link, result.body, result.image)
+                        console.log('initial save')
                     }
                 })
             })   
@@ -68,13 +71,15 @@ exports.updateDB = async () => {
                     }
                 }, (err, db) => {
                     if (err) { console.log(err) }
-                    if (db.entry) {
+                    if (db.entry.link === result.link) {
                         // There already is one, move on
+                        console.log('Link ' + result.link + ' exists in DB, returning.')
                         return
                     }
                     else {
                         // This entry does not exist! Save it!
                         store(result.site, result.title, result.summary, result.link, result.body, result.image)
+                        console.log('ts saved')
                     }
                 })
             })   
@@ -123,13 +128,15 @@ exports.updateDB = async () => {
                         }
                     }, (err, db) => {
                         if (err) { console.log(err) }
-                        if (db.entry) {
+                        if (db.entry.link === result.link) {
                             // There already is one, move on
+                            console.log('Link ' + result.link + ' exists in DB, returning.')
                             return
                         }
                         else {
                             // This entry does not exist! Save it!
                             store(result.site, result.title, result.summary, result.link, result.body, result.image)
+                            console.log('anand saved')
                         }
                     })
                     
@@ -138,6 +145,7 @@ exports.updateDB = async () => {
         }
     console.log('anand done.')
     console.log('DB updated.')
+    console.log('Saved ' + saves + ' entries')
 }
 
 // Removies stories older than 'days' days from the DB. Appears to work.
@@ -182,10 +190,9 @@ exports.cleanDB = async () => {
             return
         }
     })
-    console.log("done.")
 }    
 // Saves the actual DB entries
-function store (site, title, summary, link, body, image) {
+async function store (site, title, summary, link, body, image) {
     let id = mongoose.Types.ObjectId()
     let entry = new Entry(
         {
@@ -198,7 +205,8 @@ function store (site, title, summary, link, body, image) {
             image: image
         }
     )
-    entry.save((err) => {
+    await entry.save((err) => {
         if (err) { console.log(err) }
+        saves++
     })
 }
