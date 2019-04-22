@@ -14,7 +14,7 @@ const zdnetURL = 'https://www.zdnet.com/'
 // All of the scrapers are run from here.
 exports.updateDB = async () => {
     console.log("Updating DB.")
-    /*
+    
     // The Ars scraper (works)
     for (let i = 1; i < pages; i++) {
         await ars.get(arsURL + i).then(results => {
@@ -51,37 +51,26 @@ exports.updateDB = async () => {
         })
     }
     console.log("ars done.")
-    */
-    /*
+    
+    
     // TechSpot Features Scraper
     for (let i = 1; i < pages; i++) {
         await ts.get(tsURL + i).then(results => {
             results.map((result, index) => {
-            mongoose.connection.db.listCollections({name: 'entries'})
-            .next(function (err, collinfo) {
-                if (err) { console.log(err) }
-                if (collinfo) {
-                    // Collection exists, test if entry exists, if not, save it
-                    async.parallel({
+                async.parallel({
 
-                        entry: (callback) => {
+                    entry: (callback) => {
                         Entry.findOne({ link: result.link})
                         .exec(callback)
-                        }
-                        }, (err, db) => {
-                            if (err) { console.log(err) }
-                            if (db.entry) {
-                                // There already is one, move on
-                                return
-                            }
-                            else {
-                                // This entry does not exist! Save it!
-                                store(result.site, result.title, result.summary, result.link, result.body, result.image)
-                            }
-                        })
+                    }
+                }, (err, db) => {
+                    if (err) { console.log(err) }
+                    if (db.entry) {
+                        // There already is one, move on
+                        return
                     }
                     else {
-                        // This is our intial save, dump it all!
+                        // This entry does not exist! Save it!
                         store(result.site, result.title, result.summary, result.link, result.body, result.image)
                     }
                 })
@@ -89,45 +78,35 @@ exports.updateDB = async () => {
         })
     }
     console.log('ts done.')
-    */
-    /*
+    
+    
     // ZDNet Scraper goes here
     for (let i = 1; i < pages; i++) {
         await zd.get(zdnetURL + i).then(results => {
             results.map((result, index) => {
-            mongoose.connection.db.listCollections({name: 'entries'})
-            .next(function (err, collinfo) {
-                if (err) { console.log(err) }
-                if (collinfo) {
-                    // Collection exists, test if entry exists, if not, save it
                     async.parallel({
 
                         entry: (callback) => {
                         Entry.findOne({ link: result.link})
                         .exec(callback)
                         }
-                        }, (err, db) => {
-                            if (err) { console.log(err) }
-                            if (db.entry) {
-                                // There already is one, move on
-                                return
-                            }
-                            else {
-                                // This entry does not exist! Save it!
-                                store(result.site, result.title, result.summary, result.link, result.body, result.image)
-                            }
-                        })
-                    }
-                    else {
-                        // This is our intial save, dump it all!
-                        store(result.site, result.title, result.summary, result.link, result.body, result.image)
-                    }
+                    }, (err, db) => {
+                        if (err) { console.log(err) }
+                        if (db.entry) {
+                            // There already is one, move on
+                            return
+                        }
+                        else {
+                            // This entry does not exist! Save it!
+                            store(result.site, result.title, result.summary, result.link, result.body, result.image)
+                        }
+                    })
+                    
                 })
             })   
-        })
-    }
+        }
     console.log('zd done.')
-    */
+    
     // Next scraper here
 }
 
@@ -138,7 +117,6 @@ exports.cleanDB = async () => {
     .next(function (err, collinfo) {
         if (err) { console.log(err) }
         if (collinfo) {
-            // Collection exists, test if entry exists, if not, save it
             async.parallel({
 
                 entries: (callback) => {
