@@ -13,11 +13,13 @@ const tsURL = 'https://www.techspot.com/features/'
 const zdnetURL = 'https://www.zdnet.com/'
 const anandURL = 'https://www.anandtech.com/Page/'
 
+var log = require('./log.js')
+
+
 let saves = 0
 // All of the scrapers are run from here.
 exports.updateDB = async () => {
     console.log("Updating DB.")
-
     // The Ars scraper (works)
     for (let i = 1; i < pages; i++) {
         await ars.get(arsURL + i).then(results => {
@@ -30,6 +32,8 @@ exports.updateDB = async () => {
 
     
     // TechSpot Features Scraper
+
+    console.log("Updating DB.")
     for (let i = 1; i < pages; i++) {
         await ts.get(tsURL + i).then(results => {
             results.map((result, index) => {
@@ -39,36 +43,10 @@ exports.updateDB = async () => {
     }                  
     console.log('ts done.')
 
-    /*
-    // ZDNet Scraper goes here
-    for (let i = 1; i < pages; i++) {
-        await zd.get(zdnetURL + i).then(results => {
-            results.map((result, index) => {
-                    async.parallel({
-
-                        entry: (callback) => {
-                        Entry.findOne({ link: result.link})
-                        .exec(callback)
-                        }
-                    }, (err, db) => {
-                        if (err) { console.log(err) }
-                        if (db.entry) {
-                            // There already is one, move on
-                            return
-                        }
-                        else {
-                            // This entry does not exist! Save it!
-                            store(result.site, result.title, result.summary, result.link, result.body, result.image)
-                        }
-                    })
-                    
-                })
-            })   
-        }
-    console.log('zd done.')
-    */
 
     // AnandTech scraper
+
+    console.log("Updating DB.")
     for (let i = 1; i < pages; i++) {
         await anand.get(anandURL + i).then(results => {
             results.map((result, index) => {
@@ -77,8 +55,6 @@ exports.updateDB = async () => {
         })
     }                  
     console.log('anand done.')
-    console.log('DB updated.')
-    console.log('Saved ' + saves + ' entries')
 }
 
 // Removies stories older than 'days' days from the DB. Appears to work.
@@ -150,7 +126,13 @@ async function store (site, title, summary, link, body, image) {
         finish,
         options
     )
-    saves++
+    /*
+    log.debug('Saving:')
+    log.trace('Site: ' + site)
+    log.trace('Title: ' + title)
+    log.trace('Link: ' + link)
+    log.info('Done.')
+    */
     /*
     let entry = new Entry(
         {

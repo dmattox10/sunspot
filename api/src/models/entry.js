@@ -5,27 +5,27 @@ const Schema = mongoose.Schema
 const EntrySchema = new Schema({
     site: {
         type: String,
-        required: false
+        required: true
     },
     title: {
         type: String,
-        required: false
+        required: true
     },
     summary: {
         type: String,
-        required: false
+        required: true
     },
     link: {
         type: String,
-        required: false
+        required: true
     },
     body: {
         type: String,
-        required: false
+        required: true
     },
     image: {
         type: String,
-        required: false
+        required: true
     },
     date: {
         type: Date,

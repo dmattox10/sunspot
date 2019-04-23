@@ -1,4 +1,3 @@
-const mongoose = require('mongoose')
 const axios = require('axios')
 
     exports.sizeOf = ( object ) => {
@@ -45,12 +44,11 @@ const axios = require('axios')
         const config = {
             method: 'get',
             url: image,
+            responseType: 'blob',
             headers: { 'User-Agent': 'Mozilla/5.0 (compatible; MSIE 9.0; Windows Phone OS 7.5; Trident/5.0; IEMobile/9.0)' }
         }
         try {
-            let response = await axios(config, {
-                responseType: 'blob'
-            })
+            let response = await axios(config)
             let contents = Buffer.from(response.data).toString('base64')
             return `data:${response.headers['content-type'].toLowerCase()};base64,${contents}`
             
@@ -59,3 +57,4 @@ const axios = require('axios')
             console.log(error)
         }
     }
+    

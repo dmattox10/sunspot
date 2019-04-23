@@ -18,13 +18,9 @@ exports.get = async (url) => {
         const $ = cheerio.load(response.data)
         $('.content .main_cont div.cont_box1.l_').map((i, element) => {
             const title = $(element).find('.cont_box1_txt h2').children('a').text().trim() // works
-            console.log(title)
             const link = baseURL + $(element).find('.cont_box1_pic.pie').children('a').attr('href') // works
-            console.log(link)
-            const imageLink = $(element).find('.cont_box1_pic.pie a.crop160').children('img').attr('src') // 
-            console.log(imageLink)
-            const summary = $(element).find('.cont_box1_txt').children('p').text().trim()    
-            console.log(summary)        
+            const imageLink = $(element).find('.cont_box1_pic.pie a.crop160').children('img').attr('src') // works
+            const summary = $(element).find('.cont_box1_txt').children('p').text().trim() || null// works
             tools.img(String(imageLink)).then(image => {
                 const data = {
                     title: title,
@@ -43,6 +39,7 @@ exports.get = async (url) => {
             let title = results[i].title
             let link = results[i].link
             let image = results[i].image
+            let summary = results[i].summary
             const config = {
                 method: 'get',
                 url: results[i].link,
@@ -52,10 +49,8 @@ exports.get = async (url) => {
             const $ = cheerio.load(response.data , {
                 normalizeWhitespace: true
             })
-            $('').map((i, element) => {
-                const body = $(element).find('section.content div.articleContent').children('p').text().trim()
-                console.log(image)
-                console.log(body)
+            $('section.content section.main_cont').map((i, element) => {
+                const body = $(element).find('div.articleContent').children('p').text().trim()
                 const data = {
                     site: 'AnandTech',
                     title: title,
