@@ -3,7 +3,6 @@ const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
 const EntrySchema = new Schema({
-    _id: Schema.Types.ObjectId,
     site: {
         type: String,
         required: false

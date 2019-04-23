@@ -22,40 +22,10 @@ exports.updateDB = async () => {
     for (let i = 1; i < pages; i++) {
         await ars.get(arsURL + i).then(results => {
             results.map((result, index) => {
-            mongoose.connection.db.listCollections({name: 'entries'})
-            .next(function (err, collinfo) {
-                if (err) { console.log(err) }
-                if (collinfo) {
-                    // Collection exists, test if entry exists, if not, save it
-                    async.parallel({
-
-                        entry: (callback) => {
-                        Entry.find({ link: result.link}).limit(1)
-                        .exec(callback)
-                        }
-                        }, (err, db) => {
-                            if (err) { console.log(err) }
-                            if (db.entry.link === result.link) {
-                                // There already is one, move on
-                                console.log('Link ' + result.link + ' exists in DB, returning.')
-                                return
-                            }
-                            else {
-                                // This entry does not exist! Save it!
-                                store(result.site, result.title, result.summary, result.link, result.body, result.image)
-                                console.log('ars saved')
-                            }
-                        })
-                    }
-                    else {
-                        // This is our intial save, dump it all!
-                        store(result.site, result.title, result.summary, result.link, result.body, result.image)
-                        console.log('initial save')
-                    }
-                })
-            })   
+                store(result.site, result.title, result.summary, result.link, result.body, result.image)
+            })
         })
-    }
+    }                   
     console.log("ars done.")
 
     
@@ -63,28 +33,10 @@ exports.updateDB = async () => {
     for (let i = 1; i < pages; i++) {
         await ts.get(tsURL + i).then(results => {
             results.map((result, index) => {
-                async.parallel({
-
-                    entry: (callback) => {
-                        Entry.find({ link: result.link}).limit(1)
-                        .exec(callback)
-                    }
-                }, (err, db) => {
-                    if (err) { console.log(err) }
-                    if (db.entry.link === result.link) {
-                        // There already is one, move on
-                        console.log('Link ' + result.link + ' exists in DB, returning.')
-                        return
-                    }
-                    else {
-                        // This entry does not exist! Save it!
-                        store(result.site, result.title, result.summary, result.link, result.body, result.image)
-                        console.log('ts saved')
-                    }
-                })
-            })   
+                store(result.site, result.title, result.summary, result.link, result.body, result.image)
+            })
         })
-    }
+    }                  
     console.log('ts done.')
 
     /*
@@ -120,29 +72,10 @@ exports.updateDB = async () => {
     for (let i = 1; i < pages; i++) {
         await anand.get(anandURL + i).then(results => {
             results.map((result, index) => {
-                    async.parallel({
-
-                        entry: (callback) => {
-                        Entry.find({ link: result.link}).limit(1)
-                        .exec(callback)
-                        }
-                    }, (err, db) => {
-                        if (err) { console.log(err) }
-                        if (db.entry.link === result.link) {
-                            // There already is one, move on
-                            console.log('Link ' + result.link + ' exists in DB, returning.')
-                            return
-                        }
-                        else {
-                            // This entry does not exist! Save it!
-                            store(result.site, result.title, result.summary, result.link, result.body, result.image)
-                            console.log('anand saved')
-                        }
-                    })
-                    
-                })
-            })   
-        }
+                store(result.site, result.title, result.summary, result.link, result.body, result.image)
+            })
+        })
+    }                  
     console.log('anand done.')
     console.log('DB updated.')
     console.log('Saved ' + saves + ' entries')
@@ -193,10 +126,34 @@ exports.cleanDB = async () => {
 }    
 // Saves the actual DB entries
 async function store (site, title, summary, link, body, image) {
-    let id = mongoose.Types.ObjectId()
+    let start = {
+        site: site,
+        title: title,
+        summary: summary,
+        link: link,
+        body: body,
+        image: image
+    }
+    let finish = {
+        site: site,
+        title: title,
+        summary: summary,
+        link: link,
+        body: body,
+        image: image
+    }
+    let options = {
+        upsert: true
+    }
+    await Entry.findOneAndUpdate(
+        start,
+        finish,
+        options
+    )
+    saves++
+    /*
     let entry = new Entry(
         {
-            _id: id,
             site: site,
             title: title,
             summary: summary,
@@ -209,4 +166,5 @@ async function store (site, title, summary, link, body, image) {
         if (err) { console.log(err) }
         saves++
     })
+    */
 }
