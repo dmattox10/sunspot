@@ -1,6 +1,7 @@
 const axios = require('axios')
 const cheerio = require('cheerio')
 const tools = require('../tools')
+const baseURL = 'https://www.zdnet.com'
 
 let results = []
 let output = []
@@ -15,13 +16,14 @@ exports.get = async (url) => {
         console.log('scraping zd.')
         const response = await axios(config)
         const $ = cheerio.load(response.data)
-        $('article.item').map((i, element) => {
-            const title = $(element).find('a.thumb').attr('title').text().trim() // 
+        $('div#main div.contentWrapper div.container div.front-door-river article.item').map((i, element) => {
+            const title = $(element).find('div div.content h3').children('a').text().trim() // 
             console.log(title)
-            const link = $(element).find('a.thumb').attr('href') // 
+            const link = baseURL + $(element).find('div div.content h3').children('a').attr('href') // 
             console.log(link)
-            var imageLink = $(element).find('img').attr('src')
+            var imageLink = $(element).find('div div.thumbWrap a.thumb span.img').children('img').attr('src')
             console.log(imageLink)
+            /*
             tools.img(String(imageLink)).then(image => {
                 const data = {
                     title: title,
@@ -30,11 +32,13 @@ exports.get = async (url) => {
                 }
                 results.push(data)
             })
+            */
             
         })
     } catch (error) {
         console.error("Something bad happened: " + error)
     }
+    /*
     try {
         for (let i = 0; i < results.length; i++) {
             let title = results[i].title
@@ -44,10 +48,10 @@ exports.get = async (url) => {
             const $ = cheerio.load(response.data , {
                 normalizeWhitespace: true
             })
-            $('').map((i, element) => {
-                const summary = $(element).find('.topContent .container').children('.summary').text().trim()
+            $('div.not-logged-in.touch-disabled.skybox-auto-collapse.skybox-loaded').map((i, element) => {
+                const summary = $(element).find('div.topContent.container header.storyHeader.article').children('p').text().trim()
                 console.log(summary)
-                const body = $(element).find('#main .contentWrapper .storyBody').children('p').text().trim()
+                const body = $(element).find('div.main div.contentWrapper div.container article div.storyBody').children('p').text().trim()
                 console.log(body)
                 const data = {
                     site: 'ZDNet',
@@ -65,4 +69,5 @@ exports.get = async (url) => {
         console.error("Something bad happened: " + error)
     }
     return output
+    */
 }

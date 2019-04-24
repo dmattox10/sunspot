@@ -34,8 +34,8 @@ new CronJob('0 56 11 * 1-5', () => {
 }, null, true, 'America/New_York')
 
 // Temporary Entry for testing purposes
-new CronJob('0 40 14 * * 1-5', () => {
-    runner.updateAT()
+new CronJob('0 40 21 * * 1-5', () => {
+    runner.updateDB()
 }, null, true, 'America/New_York')
 
 const PORT = process.env.PORT || 5000

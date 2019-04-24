@@ -1,6 +1,7 @@
 const ars = require('./scrapers/ars')
 const ts = require('./scrapers/ts')
 const zd = require('./scrapers/zd')
+const en = require('./scrapers/engadget')
 const anand = require('./scrapers/anand')
 const mongoose = require('mongoose')
 const moment = require('moment')
@@ -12,6 +13,7 @@ const arsURL = 'https://arstechnica.com/page/'
 const tsURL = 'https://www.techspot.com/features/'
 const zdnetURL = 'https://www.zdnet.com/'
 const anandURL = 'https://www.anandtech.com/Page/'
+const engadgetURL = 'https://www.engadget.com/all/page/'
 
 var log = require('./log.js')
 
@@ -19,6 +21,7 @@ var log = require('./log.js')
 let saves = 0
 // All of the scrapers are run from here.
 exports.updateDB = async () => {
+    /*
     console.log("Updating DB.")
     // The Ars scraper (works)
     for (let i = 1; i < pages; i++) {
@@ -55,6 +58,31 @@ exports.updateDB = async () => {
         })
     }                  
     console.log('anand done.')
+    */
+    /*
+    // zd scraper
+    console.log("Updating DB.")
+    for (let i = 1; i < pages; i++) {
+        await zd.get(zdnetURL + i).then(results => {
+            results.map((result, index) => {
+                store(result.site, result.title, result.summary, result.link, result.body, result.image)
+            })
+        })
+    }
+    */
+    // engadget scraper
+    console.log("Updating DB.")
+    for (let i = 1; i < pages; i++) {
+        await en.get(engadgetURL + i)
+        /*
+        .then(results => {
+            results.map((result, index) => {
+                store(result.site, result.title, result.summary, result.link, result.body, result.image)
+            })
+        })
+        */
+    }                   
+    console.log("en done.")
 }
 
 // Removies stories older than 'days' days from the DB. Appears to work.
